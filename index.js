@@ -25,7 +25,7 @@ app.post('/login', async (req, res) => {
     const input = `${username}-${password}-${Date.now()}`;
     const token = crypto.createHash('sha256').update(input).digest('base64');
 
-    return db.token.insert({token: token})
+    return db.token.insert({token: token, expire_at: Date.now() + 1000 * 60 * 60})
         .then(doc => res.status(200).json(doc.token))
         .catch(err => res.status(500).json(err))
 });
@@ -49,7 +49,8 @@ app.get('/test', async (req, res) => {
     const token = req.get('token');
     return db.token.findOne({token: token})
         .then(doc => {
-            if(doc) return res.status(200).json("Vous pouvez acceder au server");
+            if(doc && doc.expire_at >= Date.now()) return res.status(200).json("Vous pouvez acceder au server");
+            if(doc) return res.status(400).json("Token expired");
             return res.status(400).json("Token doesn't exist");
         })
         .catch(err => res.json(500).send(err));
