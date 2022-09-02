@@ -26,12 +26,22 @@ app.post('/login', async (req, res) => {
     const token = crypto.createHash('sha256').update(input).digest('base64');
 
     return db.token.insert({token: token})
-        .then(doc => {
-            return res.status(200).json(doc.token);
-        })
-        .catch(err => {
-            return res.status(500).json(err);
-        })
+        .then(doc => res.status(200).json(doc.token))
+        .catch(err => res.status(500).json(err))
+});
+
+
+app.post('/register', async (req, res) => {
+    if(!req.body || !(req.body.username && req.body.password)) return res.status(400).json("Wrong data format");
+    
+    const [username, password] = [req.body.username, req.body.password];
+    const user = await db.user.findOne({username: username});
+    if(user) return res.status(400).json("Username already taken");
+
+    return db.user.insert({username: username, password: password})
+        .then(doc => res.status(200).json(doc))
+        .catch(err => res.status(500).json(err));
+
 });
 
 
