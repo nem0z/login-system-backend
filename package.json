@@ -1,0 +1,32 @@
+{
+  "name": "login-system-backend",
+  "version": "1.0.0",
+  "description": "Login system backend part built with node/Express",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "makedb": "node makeDB.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nem0z/login-system-backend.git"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "login",
+    "backend"
+  ],
+  "author": "nem0z",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nem0z/login-system-backend/issues"
+  },
+  "homepage": "https://github.com/nem0z/login-system-backend#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.18.1",
+    "nedb-promises": "^6.1.0"
+  }
+}

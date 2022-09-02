@@ -1,0 +1,1 @@
+export const find = (arr, arg, value) => arr.find(x => x[arg] === value);
