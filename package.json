@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/nem0z/login-system-backend#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "express": "^4.18.1",
     "nedb-promises": "^6.1.0"
