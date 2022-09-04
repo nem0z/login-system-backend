@@ -3,12 +3,15 @@ import Datastore from 'nedb-promises';
 import crypto from 'crypto';
 import cors from 'cors';
 
+// declare app and settings
 const app = express();
 const port = 3000;
 
+// middleware
 app.use(express.json());
 app.use(cors());
 
+// declare db
 const db = {
     'user': Datastore.create('./dbs/user.db'),
     'token': Datastore.create('./dbs/token.db')
@@ -16,7 +19,6 @@ const db = {
 
 
 app.post('/login', async (req, res) => {
-    console.log('data : ',req.body);
     if(!req.body || !(req.body.username && req.body.password)) return res.status(400).json("Wrong data format");
     
     const [username, password] = [req.body.username, req.body.password];
@@ -59,7 +61,7 @@ app.get('/test', async (req, res) => {
         .catch(err => res.json(500).send(err));
 });
 
-
+// Start app
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`)
 });
