@@ -14,10 +14,29 @@ app.use(cors());
 // declare db
 const db = {
     'user': Datastore.create('./dbs/user.db'),
-    'token': Datastore.create('./dbs/token.db')
 };
 
+function isValidSignature(data) {
+    const { signature, timestamp, userId } = data;
+    if(Date.now() > timestamp + 2000) 
+        return new Promise(resolve => resolve("Signature no longer valid"));
 
+    return db.user.findOne({_id: userId})
+        .then(user => {
+                if(!user) return 'No user match given _id';
+                if(user.credential?.expire_at < Date.now()) return "Token for given user is no longer valid";
+
+                const toHash = `${user.credential?.token}${timestamp}`;
+                const validSignature = crypto.createHash('sha256').update(toHash).digest('base64');
+                
+                if(validSignature === signature) return true;
+                return "Signature doesn't match expectaed statement";
+            }   
+        )
+        .catch(err => console.error(err));
+                    
+
+}
 
 app.post('/login', async (req, res) => {
     if(!req.body || !(req.body.username && req.body.password)) return res.status(400).json("Wrong data format");
@@ -47,21 +66,21 @@ app.post('/register', async (req, res) => {
     if(user) return res.status(400).json("Username already taken");
 
     return db.user.insert({username: username, password: password})
-        .then(insert => res.status(200).json(doc))
+        .then(insert => res.status(200).json(insert))
         .catch(err => res.status(500).json(err));
 
 });
 
 
 app.get('/test', async (req, res) => {
-    const token = req.get('token');
-    return db.token.findOne({"credential.token": token})
-        .then(doc => {
-            if(doc && doc.expire_at >= Date.now()) return res.status(200).json("Vous pouvez acceder au server");
-            if(doc) return res.status(400).json("Token expired");
-            return res.status(400).json("Token doesn't exist");
+    const signature = JSON.parse(req.get('signature')) || null;
+
+    isValidSignature(signature)
+        .then(isValid => {
+            if(isValid === true) return res.status(200).json("Vous pouvez accéder au serveur");
+            return res.status(400).json({err: isValid});
         })
-        .catch(err => res.json(500).send(err));
+        .catch(err => res.status(500).json(err));
 });
 
 // Start app
