@@ -1,3 +1,6 @@
-{"username":"bob","password":"azerty123","_id":"Cy10ehhSGAyoMPjm"}
+{"username":"Test2","password":"test","_id":"3Jc3vGSmZrZHMVe4"}
+{"username":"Maxime","password":"password","_id":"9ERCMHsN2lyD1hJI"}
+{"username":"bob","password":"azerty123","_id":"Cy10ehhSGAyoMPjm","credential":{"token":"8X9T3roKDhXQNIN7+royngflbIYEOcieDT1xV0fBv7M=","expire_at":1662586428902}}
 {"username":"Test","password":"test","_id":"MllC2qBRaHeDxE78"}
-{"username":"iDz","password":"123","_id":"uoU3R2ixdn1mvOGL"}
+{"username":"iDz","password":"123","_id":"uoU3R2ixdn1mvOGL","credential":{"token":"pZgD+y+d1KzZVG+1xF91RkjkB83oLKJ7U/HUbWLT6VM=","expire_at":1662586562596}}
+{"username":"iDz","password":"123","_id":"uoU3R2ixdn1mvOGL","credential":{"token":"NHiViXq4F72HR2ObJ7C0Bz9pjv80Me2g0gzCn+9smKw=","expire_at":1662586583537}}

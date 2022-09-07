@@ -18,20 +18,23 @@ const db = {
 };
 
 
+
 app.post('/login', async (req, res) => {
     if(!req.body || !(req.body.username && req.body.password)) return res.status(400).json("Wrong data format");
     
     const [username, password] = [req.body.username, req.body.password];
     const user = await db.user.findOne({username: username});
 
-    if(!user) return res.status(400).json("No user find with given login");
+    if(!user) return res.status(400).json("No user find with given username");
     if(user.password !== password) return res.status(400).json("Wrong password for given user");
 
     const input = `${username}-${password}-${Date.now()}`;
     const token = crypto.createHash('sha256').update(input).digest('base64');
+    const expire_at = Date.now() + 1000*60*60;
 
-    return db.token.insert({token: token, expire_at: Date.now() + 1000 * 60 * 60})
-        .then(doc => res.status(200).json(doc.token))
+    return db.user.update({_id: user._id}, {$set: { "credential.token": token, "credential.expire_at": expire_at }}, {})
+        .then(numReplaced => res.status(200).json(numReplaced))
+        .then(db.user.compactDatafile()) // because update create a new line
         .catch(err => res.status(500).json(err))
 });
 
@@ -44,7 +47,7 @@ app.post('/register', async (req, res) => {
     if(user) return res.status(400).json("Username already taken");
 
     return db.user.insert({username: username, password: password})
-        .then(doc => res.status(200).json(doc))
+        .then(insert => res.status(200).json(doc))
         .catch(err => res.status(500).json(err));
 
 });
@@ -52,7 +55,7 @@ app.post('/register', async (req, res) => {
 
 app.get('/test', async (req, res) => {
     const token = req.get('token');
-    return db.token.findOne({token: token})
+    return db.token.findOne({"credential.token": token})
         .then(doc => {
             if(doc && doc.expire_at >= Date.now()) return res.status(200).json("Vous pouvez acceder au server");
             if(doc) return res.status(400).json("Token expired");
