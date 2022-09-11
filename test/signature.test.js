@@ -6,14 +6,15 @@ const db = {
     'user': Datastore.create('./dbs/user.db'),
 };
 
-const createSignature = token => crypto.createHash('sha256').update(`${token}${Date.now()}`).digest('base64');
+const createSignature = (...args) => crypto.createHash('sha256').update(args.join('')).digest('base64');
 
 const user = await db.user.findOne({_id: "MllC2qBRaHeDxE78"});
 
 console.log(user);
+const timestamp = Math.floor(Date.now() / 1000);
 const signature = {
-    signature: createSignature(user.credential.token),
-    timestamp: Date.now(),
+    signature: createSignature(user.credential.token, timestamp),
+    timestamp: timestamp,
     userId: user._id,
 };
 

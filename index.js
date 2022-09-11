@@ -16,9 +16,9 @@ const db = {
     'user': Datastore.create('./dbs/user.db'),
 };
 
-function isValidSignature(data) {
-    const { signature, timestamp, userId } = data;
-    if(Date.now() > timestamp + 2000) 
+function isValidSignature({ signature, timestamp, userId }) {
+
+    if(Math.floor(Date.now() / 1000) - timestamp > 1)
         return new Promise(resolve => resolve("Signature no longer valid"));
 
     return db.user.findOne({_id: userId})
