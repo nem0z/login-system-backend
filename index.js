@@ -52,7 +52,14 @@ app.post('/login', async (req, res) => {
     const expire_at = Date.now() + 1000*60*60;
 
     return db.user.update({_id: user._id}, {$set: { "credential.token": token, "credential.expire_at": expire_at }}, {})
-        .then(numReplaced => res.status(200).json(numReplaced))
+        .then(() => db.user.findOne({_id: user._id})
+            .then(user => res.status(200).json({
+                    id: user._id,
+                    username: user.username,
+                    credential: user.credential,
+                })
+            ).catch(err => { throw(err) })
+        )
         .then(db.user.compactDatafile()) // because update create a new line
         .catch(err => res.status(500).json(err))
 });
